@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+*.egg-info/
+
+# Environment files
+.env
+config/.env
+
+# Data files
+*.xlsx
+*.xls
+*.csv
+output/
+downloads/
+~/Downloads/AmexStatements/
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Analysis outputs
+transaction_summary.txt
+analyze_*.py
