@@ -41,4 +41,5 @@ Thumbs.db
 
 # Analysis outputs
 transaction_summary.txt
-analyze_*.py
+# Allow analyze_statement.py
+# analyze_*.py

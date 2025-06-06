@@ -1,3 +1,6 @@
+playwright==1.40.0
+python-dotenv==1.0.0
+pyautogui==0.9.54
 camel-ai[all]==0.2.37
 chunkr-ai>=0.0.41
 docx2markdown>=0.1.1
