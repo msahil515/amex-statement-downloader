@@ -267,13 +267,19 @@ def main(card_name=None):
                 
                 def handle_download(download):
                     nonlocal download_count, current_date
+                    # Get suggested filename
+                    suggested_filename = download.suggested_filename
+                    
                     # Create a filename with the statement date if available
                     if current_date:
                         date_str = current_date.replace(' ', '_').replace(',', '')
-                        filename = f"AmexStatement_{date_str}.pdf"
+                        # Use the appropriate extension from the suggested filename or default to csv
+                        ext = os.path.splitext(suggested_filename)[1] if suggested_filename and '.' in suggested_filename else '.csv'
+                        filename = f"AmexStatement_{date_str}{ext}"
                     else:
                         # Fallback to generic name with timestamp
-                        filename = f"AmexStatement_{download_count+1}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+                        ext = os.path.splitext(suggested_filename)[1] if suggested_filename and '.' in suggested_filename else '.csv'
+                        filename = f"AmexStatement_{download_count+1}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}{ext}"
                     
                     # Save the file
                     filepath = os.path.join(statements_dir, filename)
@@ -315,6 +321,41 @@ def main(card_name=None):
                             print(f"Downloading statement for {current_date}...")
                             dl_button.click()
                             print(f"Clicked download button for {current_date}")
+                            
+                            # Wait for the file type selection dialog to appear
+                            time.sleep(2)
+                            
+                            # Take a screenshot of the file type selection dialog
+                            dialog_screenshot_path = os.path.join(screenshots_dir, f"file_type_dialog_{download_count+1}.png")
+                            page.screenshot(path=dialog_screenshot_path)
+                            print(f"Took screenshot of file type dialog: {dialog_screenshot_path}")
+                            
+                            # Select CSV option
+                            try:
+                                # Look for CSV radio button
+                                csv_option = page.wait_for_selector("input[type='radio'][id*='csv'], label:has-text('CSV')", timeout=5000)
+                                if csv_option:
+                                    csv_option.click()
+                                    print("Selected CSV format")
+                                    time.sleep(1)
+                                    
+                                    # Take a screenshot after selecting CSV
+                                    csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{download_count+1}.png")
+                                    page.screenshot(path=csv_selected_path)
+                                    print(f"Took screenshot after selecting CSV: {csv_selected_path}")
+                                    
+                                    # Click the Download button in the dialog
+                                    download_button = page.wait_for_selector("button:has-text('Download'):not([disabled])", timeout=5000)
+                                    if download_button:
+                                        download_button.click()
+                                        print("Clicked Download button in the dialog")
+                                    else:
+                                        print("Could not find Download button in the dialog")
+                                else:
+                                    print("Could not find CSV option")
+                            except Exception as e:
+                                print(f"Error selecting CSV format: {e}")
+                            
                             # Wait for download to complete
                             time.sleep(5)
                     except Exception as e:
@@ -330,6 +371,41 @@ def main(card_name=None):
                             print(f"Downloading statement {i+1}...")
                             button.click()
                             print(f"Clicked download button {i+1}")
+                            
+                            # Wait for the file type selection dialog to appear
+                            time.sleep(2)
+                            
+                            # Take a screenshot of the file type selection dialog
+                            dialog_screenshot_path = os.path.join(screenshots_dir, f"file_type_dialog_{i+1}.png")
+                            page.screenshot(path=dialog_screenshot_path)
+                            print(f"Took screenshot of file type dialog: {dialog_screenshot_path}")
+                            
+                            # Select CSV option
+                            try:
+                                # Look for CSV radio button
+                                csv_option = page.wait_for_selector("input[type='radio'][id*='csv'], label:has-text('CSV')", timeout=5000)
+                                if csv_option:
+                                    csv_option.click()
+                                    print("Selected CSV format")
+                                    time.sleep(1)
+                                    
+                                    # Take a screenshot after selecting CSV
+                                    csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{i+1}.png")
+                                    page.screenshot(path=csv_selected_path)
+                                    print(f"Took screenshot after selecting CSV: {csv_selected_path}")
+                                    
+                                    # Click the Download button in the dialog
+                                    download_button = page.wait_for_selector("button:has-text('Download'):not([disabled])", timeout=5000)
+                                    if download_button:
+                                        download_button.click()
+                                        print("Clicked Download button in the dialog")
+                                    else:
+                                        print("Could not find Download button in the dialog")
+                                else:
+                                    print("Could not find CSV option")
+                            except Exception as e:
+                                print(f"Error selecting CSV format: {e}")
+                            
                             # Wait for download to complete
                             time.sleep(5)
                         except Exception as e:
