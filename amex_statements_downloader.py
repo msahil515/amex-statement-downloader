@@ -253,66 +253,27 @@ def main(card_name=None):
                 print(f"Error expanding Older Statements: {e}")
                 print("Could not expand Older Statements section automatically")
             
-            # Now find and capture all download links
-            print("\nCapturing statement download links...")
+            # Now click on each download link directly through the UI
+            print("\nPreparing to download statements...")
             try:
-                # First, find all the download buttons
-                download_buttons = page.query_selector_all("button:has-text('Download'), a:has-text('Download')")
-                print(f"Found {len(download_buttons)} download buttons")
-                
-                # Create a list to store statement information
-                statements = []
-                
-                # For each download button, get the date and set up a download handler
-                for i, button in enumerate(download_buttons):
-                    # Find the corresponding date - it should be in the same row
-                    date_row = button.evaluate("button => button.closest('tr') || button.closest('.row') || button.parentElement.parentElement")
-                    if date_row:
-                        # Try to get the date text
-                        try:
-                            date_text = date_row.evaluate("row => { const dateElement = row.querySelector('[data-closing-date], .date, .statement-date'); return dateElement ? dateElement.textContent.trim() : ''; }")
-                        except:
-                            # If there's an error with the query, try to get the first text node in the row
-                            date_text = date_row.evaluate("row => { const textNodes = Array.from(row.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim()); return textNodes.length ? textNodes[0].textContent.trim() : ''; }")
-                        
-                        if not date_text:
-                            # Last resort - look for any text that might be a date
-                            date_text = date_row.evaluate("row => { const texts = Array.from(row.querySelectorAll('*')).map(el => el.textContent.trim()).filter(t => t && /^\w+ \d{2}, \d{4}$/.test(t)); return texts[0] || ''; }")
-                        
-                        # If we still don't have a date, use the index
-                        if not date_text:
-                            date_text = f"Statement_{i+1}"
-                        
-                        print(f"Found statement from: {date_text}")
-                        
-                        # Store statement info
-                        statements.append({
-                            'date': date_text,
-                            'button': button,
-                            'index': i
-                        })
-                
-                # Now we have all statements, let's download them
-                print(f"\nPreparing to download {len(statements)} statements...")
-                
-                # Create a directory for organizing by date
+                # Create a directory for downloaded statements
                 statements_dir = os.path.join(download_dir, "statements")
                 os.makedirs(statements_dir, exist_ok=True)
                 print(f"Created directory: {statements_dir}")
                 
                 # Set up download event handler
                 download_count = 0
+                current_date = ""
                 
                 def handle_download(download):
-                    nonlocal download_count
-                    # Create a filename with the statement date
-                    if download_count < len(statements):
-                        statement_info = statements[download_count]
-                        date_str = statement_info['date'].replace(' ', '_').replace(',', '')
+                    nonlocal download_count, current_date
+                    # Create a filename with the statement date if available
+                    if current_date:
+                        date_str = current_date.replace(' ', '_').replace(',', '')
                         filename = f"AmexStatement_{date_str}.pdf"
                     else:
-                        # Fallback if we somehow get more downloads than expected
-                        filename = f"AmexStatement_Unknown_{download_count+1}.pdf"
+                        # Fallback to generic name with timestamp
+                        filename = f"AmexStatement_{download_count+1}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
                     
                     # Save the file
                     filepath = os.path.join(statements_dir, filename)
@@ -323,18 +284,61 @@ def main(card_name=None):
                 # Register the download handler
                 page.on("download", handle_download)
                 
-                # Click each download button
-                for statement in statements:
-                    print(f"\nDownloading statement from: {statement['date']}...")
-                    statement['button'].click()
-                    print(f"Clicked download button for {statement['date']}")
-                    # Wait for download to start and complete
-                    time.sleep(5)
+                # Find all download buttons
+                download_buttons = page.query_selector_all("button:has-text('Download'), a:has-text('Download')")
+                print(f"Found {len(download_buttons)} download buttons")
+                
+                # Get all date elements for pairing with download buttons
+                date_elements = page.query_selector_all("td:first-child, .date, [data-closing-date], .statement-date")
+                print(f"Found {len(date_elements)} date elements")
+                
+                # Process the Recent Statements section first
+                print("\nDownloading Recent Statements...")
+                # Get all the rows in the recent statements table
+                recent_rows = page.query_selector_all("table tr, .statement-row")
+                
+                for row in recent_rows:
+                    try:
+                        # Skip header rows
+                        if row.get_attribute("role") == "heading" or "header" in row.get_attribute("class", ""):
+                            continue
+                        
+                        # Try to get the date from the row
+                        date_element = row.query_selector("td:first-child")
+                        if date_element:
+                            current_date = date_element.inner_text().strip()
+                            print(f"Found date: {current_date}")
+                        
+                        # Find the download button in this row
+                        dl_button = row.query_selector("button:has-text('Download'), a:has-text('Download')")
+                        if dl_button:
+                            print(f"Downloading statement for {current_date}...")
+                            dl_button.click()
+                            print(f"Clicked download button for {current_date}")
+                            # Wait for download to complete
+                            time.sleep(5)
+                    except Exception as e:
+                        print(f"Error processing row: {e}")
+                
+                # If there are no clear rows, just click on all download buttons sequentially
+                if download_count == 0:
+                    print("\nFalling back to sequential download of all buttons...")
+                    for i, button in enumerate(download_buttons):
+                        try:
+                            # Try to find a nearby date element
+                            current_date = f"Statement_{i+1}"
+                            print(f"Downloading statement {i+1}...")
+                            button.click()
+                            print(f"Clicked download button {i+1}")
+                            # Wait for download to complete
+                            time.sleep(5)
+                        except Exception as e:
+                            print(f"Error clicking download button {i+1}: {e}")
                 
                 print(f"\nCompleted downloading {download_count} statements to {statements_dir}")
             
             except Exception as e:
-                print(f"Error capturing or downloading statements: {e}")
+                print(f"Error downloading statements: {e}")
                 print("Could not automatically download statements")
             
             # Take a final screenshot of the Statements and Year End Summaries page
