@@ -330,29 +330,37 @@ def main(card_name=None):
                             page.screenshot(path=dialog_screenshot_path)
                             print(f"Took screenshot of file type dialog: {dialog_screenshot_path}")
                             
-                            # Select CSV option
+                            # Select CSV option using coordinates
                             try:
-                                # Look for CSV radio button
-                                csv_option = page.wait_for_selector("input[type='radio'][id*='csv'], label:has-text('CSV')", timeout=5000)
-                                if csv_option:
-                                    csv_option.click()
-                                    print("Selected CSV format")
-                                    time.sleep(1)
-                                    
-                                    # Take a screenshot after selecting CSV
-                                    csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{download_count+1}.png")
-                                    page.screenshot(path=csv_selected_path)
-                                    print(f"Took screenshot after selecting CSV: {csv_selected_path}")
-                                    
-                                    # Click the Download button in the dialog
-                                    download_button = page.wait_for_selector("button:has-text('Download'):not([disabled])", timeout=5000)
-                                    if download_button:
-                                        download_button.click()
-                                        print("Clicked Download button in the dialog")
-                                    else:
-                                        print("Could not find Download button in the dialog")
-                                else:
-                                    print("Could not find CSV option")
+                                # Based on the dialog screenshot, we'll use coordinates to click the CSV radio button
+                                # The CSV option is typically the 3rd radio button from the top
+                                
+                                # Get viewport size to make sure we're within bounds
+                                viewport = page.viewport_size
+                                
+                                # Click on the CSV radio button (coordinates from the screenshot)
+                                # These coordinates are for the middle of the CSV radio button
+                                csv_x = viewport['width'] // 2 - 180  # Left side of dialog, aligned with radio buttons
+                                csv_y = viewport['height'] // 2 - 20  # About 3rd option in the dialog
+                                
+                                # Click where the CSV radio button should be
+                                page.mouse.click(csv_x, csv_y)
+                                print(f"Clicked at coordinates ({csv_x}, {csv_y}) for CSV option")
+                                time.sleep(1)
+                                
+                                # Take a screenshot after clicking
+                                csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{download_count+1}.png")
+                                page.screenshot(path=csv_selected_path)
+                                print(f"Took screenshot after selecting CSV: {csv_selected_path}")
+                                
+                                # Now click the Download button in the dialog
+                                # The Download button is typically in the bottom right of the dialog
+                                download_x = viewport['width'] // 2 + 100  # Right side of dialog
+                                download_y = viewport['height'] // 2 + 100  # Bottom of dialog
+                                
+                                # Click where the Download button should be
+                                page.mouse.click(download_x, download_y)
+                                print(f"Clicked at coordinates ({download_x}, {download_y}) for Download button")
                             except Exception as e:
                                 print(f"Error selecting CSV format: {e}")
                             
@@ -380,29 +388,37 @@ def main(card_name=None):
                             page.screenshot(path=dialog_screenshot_path)
                             print(f"Took screenshot of file type dialog: {dialog_screenshot_path}")
                             
-                            # Select CSV option
+                            # Select CSV option using coordinates
                             try:
-                                # Look for CSV radio button
-                                csv_option = page.wait_for_selector("input[type='radio'][id*='csv'], label:has-text('CSV')", timeout=5000)
-                                if csv_option:
-                                    csv_option.click()
-                                    print("Selected CSV format")
-                                    time.sleep(1)
-                                    
-                                    # Take a screenshot after selecting CSV
-                                    csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{i+1}.png")
-                                    page.screenshot(path=csv_selected_path)
-                                    print(f"Took screenshot after selecting CSV: {csv_selected_path}")
-                                    
-                                    # Click the Download button in the dialog
-                                    download_button = page.wait_for_selector("button:has-text('Download'):not([disabled])", timeout=5000)
-                                    if download_button:
-                                        download_button.click()
-                                        print("Clicked Download button in the dialog")
-                                    else:
-                                        print("Could not find Download button in the dialog")
-                                else:
-                                    print("Could not find CSV option")
+                                # Based on the dialog screenshot, we'll use coordinates to click the CSV radio button
+                                # The CSV option is typically the 3rd radio button from the top
+                                
+                                # Get viewport size to make sure we're within bounds
+                                viewport = page.viewport_size
+                                
+                                # Click on the CSV radio button (coordinates from the screenshot)
+                                # These coordinates are for the middle of the CSV radio button
+                                csv_x = viewport['width'] // 2 - 180  # Left side of dialog, aligned with radio buttons
+                                csv_y = viewport['height'] // 2 - 20  # About 3rd option in the dialog
+                                
+                                # Click where the CSV radio button should be
+                                page.mouse.click(csv_x, csv_y)
+                                print(f"Clicked at coordinates ({csv_x}, {csv_y}) for CSV option")
+                                time.sleep(1)
+                                
+                                # Take a screenshot after clicking
+                                csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{i+1}.png")
+                                page.screenshot(path=csv_selected_path)
+                                print(f"Took screenshot after selecting CSV: {csv_selected_path}")
+                                
+                                # Now click the Download button in the dialog
+                                # The Download button is typically in the bottom right of the dialog
+                                download_x = viewport['width'] // 2 + 100  # Right side of dialog
+                                download_y = viewport['height'] // 2 + 100  # Bottom of dialog
+                                
+                                # Click where the Download button should be
+                                page.mouse.click(download_x, download_y)
+                                print(f"Clicked at coordinates ({download_x}, {download_y}) for Download button")
                             except Exception as e:
                                 print(f"Error selecting CSV format: {e}")
                             
