@@ -348,10 +348,25 @@ def main(card_name=None):
                                 print(f"Clicked at coordinates ({csv_x}, {csv_y}) for CSV option")
                                 time.sleep(1)
                                 
-                                # Take a screenshot after clicking
+                                # Take a screenshot after clicking CSV option
                                 csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{download_count+1}.png")
                                 page.screenshot(path=csv_selected_path)
                                 print(f"Took screenshot after selecting CSV: {csv_selected_path}")
+                                
+                                # Next, click the checkbox for including additional transaction details
+                                # This checkbox is typically near the bottom of the dialog
+                                checkbox_x = viewport['width'] // 2 - 150  # Left side of dialog, aligned with checkbox
+                                checkbox_y = viewport['height'] // 2 + 50   # Near the bottom of dialog, above the buttons
+                                
+                                # Click where the checkbox should be
+                                page.mouse.click(checkbox_x, checkbox_y)
+                                print(f"Clicked at coordinates ({checkbox_x}, {checkbox_y}) for including additional details")
+                                time.sleep(1)
+                                
+                                # Take a screenshot after clicking the checkbox
+                                checkbox_selected_path = os.path.join(screenshots_dir, f"checkbox_selected_{download_count+1}.png")
+                                page.screenshot(path=checkbox_selected_path)
+                                print(f"Took screenshot after selecting checkbox: {checkbox_selected_path}")
                                 
                                 # Now click the Download button in the dialog
                                 # The Download button is typically in the bottom right of the dialog
@@ -406,10 +421,25 @@ def main(card_name=None):
                                 print(f"Clicked at coordinates ({csv_x}, {csv_y}) for CSV option")
                                 time.sleep(1)
                                 
-                                # Take a screenshot after clicking
+                                # Take a screenshot after clicking CSV option
                                 csv_selected_path = os.path.join(screenshots_dir, f"csv_selected_{i+1}.png")
                                 page.screenshot(path=csv_selected_path)
                                 print(f"Took screenshot after selecting CSV: {csv_selected_path}")
+                                
+                                # Next, click the checkbox for including additional transaction details
+                                # This checkbox is typically near the bottom of the dialog
+                                checkbox_x = viewport['width'] // 2 - 150  # Left side of dialog, aligned with checkbox
+                                checkbox_y = viewport['height'] // 2 + 50   # Near the bottom of dialog, above the buttons
+                                
+                                # Click where the checkbox should be
+                                page.mouse.click(checkbox_x, checkbox_y)
+                                print(f"Clicked at coordinates ({checkbox_x}, {checkbox_y}) for including additional details")
+                                time.sleep(1)
+                                
+                                # Take a screenshot after clicking the checkbox
+                                checkbox_selected_path = os.path.join(screenshots_dir, f"checkbox_selected_{i+1}.png")
+                                page.screenshot(path=checkbox_selected_path)
+                                print(f"Took screenshot after selecting checkbox: {checkbox_selected_path}")
                                 
                                 # Now click the Download button in the dialog
                                 # The Download button is typically in the bottom right of the dialog
